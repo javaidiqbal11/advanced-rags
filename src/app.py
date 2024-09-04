@@ -4,7 +4,7 @@ from pdfchatbot import PDFChatBot
 # Create Gradio interface
 demo, chat_history, show_img, txt, submit_button, uploaded_pdf = create_demo()
 
-# Create PDFChatBot instance (token is now handled via .env in pdfchatbot.py)
+# Create PDFChatBot instance
 pdf_chatbot = PDFChatBot()
 
 # Set up event handlers
@@ -18,4 +18,4 @@ with demo:
         success(pdf_chatbot.render_file, inputs=[uploaded_pdf], outputs=[show_img])
 
 if __name__ == "__main__":
-    demo.launch(share=True)
+    demo.launch()

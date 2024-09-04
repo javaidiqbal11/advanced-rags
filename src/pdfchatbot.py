@@ -1,5 +1,5 @@
 import yaml
-import pymupdf  # Updated import for PyMuPDF
+import fitz
 import torch
 import gradio as gr
 from PIL import Image
@@ -10,14 +10,9 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.document_loaders import PyPDFLoader
 from langchain.prompts import PromptTemplate
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-from dotenv import load_dotenv
-import os
-
-# Load environment variables from the .env file
-load_dotenv()
 
 class PDFChatBot:
-    def __init__(self, config_path="config.yaml"):
+    def __init__(self, config_path="../config.yaml"):
         """
         Initialize the PDFChatBot instance.
 
@@ -28,7 +23,6 @@ class PDFChatBot:
         self.page = 0
         self.chat_history = []
         self.config = self.load_config(config_path)
-        self.hf_token = os.getenv("HUGGING_FACE_TOKEN")  # Get the token from .env
         # Initialize other attributes to None
         self.prompt = None
         self.documents = None
@@ -100,10 +94,7 @@ class PDFChatBot:
         """
         Load the tokenizer from Hugging Face and set in the config file.
         """
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            self.config.get("autoTokenizer"),
-            use_auth_token=self.hf_token  # Pass the token here
-        )
+        self.tokenizer = AutoTokenizer.from_pretrained(self.config.get("autoTokenizer"))
 
     def load_model(self):
         """
@@ -111,7 +102,6 @@ class PDFChatBot:
         """
         self.model = AutoModelForCausalLM.from_pretrained(
             self.config.get("autoModelForCausalLM"),
-            use_auth_token=self.hf_token,  # Pass the token here
             device_map='auto',
             torch_dtype=torch.float32,
             token=True,
@@ -196,9 +186,8 @@ class PDFChatBot:
         Returns:
             PIL.Image.Image: The rendered page as an image.
         """
-        # Open the PDF using pymupdf (fitz)
-        doc = pymupdf.open(file.name)  # Corrected method for opening the file
-        page = doc.load_page(self.page)  # Load the specific page
-        pix = page.get_pixmap(matrix=pymupdf.Matrix(300 / 72, 300 / 72))  # Render at high DPI
-        image = Image.frombytes('RGB', [pix.width, pix.height], pix.samples)  # Convert to PIL image
+        doc = fitz.open(file.name)
+        page = doc[self.page]
+        pix = page.get_pixmap(matrix=fitz.Matrix(300 / 72, 300 / 72))
+        image = Image.frombytes('RGB', [pix.width, pix.height], pix.samples)
         return image
