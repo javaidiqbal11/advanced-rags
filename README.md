@@ -37,6 +37,5 @@ The ChatBot uses a configuration file (config.yaml) to specify Hugging Face mode
 To run the PDF Interaction ChatBot, execute the following command:
 
 ```
-cd src
-python app.py
+python src/app.py
 ```
