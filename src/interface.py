@@ -1,3 +1,4 @@
+# load the gradio library 
 import gradio as gr
 
 # Gradio application setup
