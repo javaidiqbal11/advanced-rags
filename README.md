@@ -19,7 +19,7 @@ PDFChatBot is a Python-based chatbot designed to answer questions based on the c
 
 ## Prerequisites 📋
 Before running the ChatBot, ensure that you have the required dependencies installed. You can install them using the following command:
-```
+```bash
 pip install -r requirements.txt
 ```
 
